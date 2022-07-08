@@ -9,6 +9,23 @@ import { fetchProductDetail } from "../store/product_detail/action";
 import { PurchaseProductState } from "../store/product_detail/type";
 import { RootState, useAppDispatch } from "../store/store";
 
+/**
+ * @body
+ * 
+ * [
+  {
+    "quantity": 0,
+    "pricePerPiece": 0
+  }
+]
+ * @returns 
+ * 
+ * 
+ * {
+  "status": true,
+  "msg": "string"
+}
+ */
 const ProductDetail = () => {
   const param = useParams();
   const dispatch = useAppDispatch();
@@ -16,24 +33,27 @@ const ProductDetail = () => {
   const productState: PurchaseProductState = useSelector(
     (state: RootState) => state.productDetail
   );
-  const { purchaseProducts } = productState
+  const { purchaseProducts } = productState;
   useEffect(() => {
     const { id } = param;
     if (!id) return;
     dispatch(fetchProductDetail(parseInt(id)));
   }, []);
 
-  if (!purchaseProducts.length) return null;
+  if (!purchaseProducts.length) return <div>nothing in the list</div>;
   return (
-    <TableContainer component={Paper}>
-    <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-      <TableBody>
-        {purchaseProducts.map((product) => (
-          <PurchasedProduct {...product} />
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
+    <div>
+      <h1>purchase details</h1>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+          <TableBody>
+            {purchaseProducts.map((product) => (
+              <PurchasedProduct {...product} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 

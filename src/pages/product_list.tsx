@@ -1,10 +1,12 @@
 import {
+  Box,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableFooter,
+  TableHead,
   TablePagination,
   TableRow,
 } from "@mui/material";
@@ -17,16 +19,32 @@ import { searchProduct } from "../store/product/actions";
 import { ISearchProduct } from "../store/product/type";
 import { RootState, useAppDispatch } from "../store/store";
 
+interface Purchase {
+  id: number;
+  quanitiy: number;
+  piecePerPrice: number;
+}
+
 const ProductList = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [dateOne, setDateOne] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
+  const [dateOne, setDateOne] = useState(() => "");
 
-  const [dateTwo, setDateTwo] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
+  const [dateTwo, setDateTwo] = useState(() => "");
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const updatePurchase = (
+    id: number,
+    quantity: number,
+    piecePerPrice: number
+  ) => {
+    let purchasesCopy = [...purchases];
+    let purchase = purchases.find((purchase) => purchase.id == id);
+    if (purchase) {
+      purchase.piecePerPrice = piecePerPrice;
+      purchase.quanitiy = quantity;
+    }
+    setPurchases(purchasesCopy);
+  };
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const handleChangePage = (
@@ -69,7 +87,6 @@ const ProductList = () => {
 
   return (
     <div>
-      <button> + create product</button>
       <div>
         <label>frame date</label>
         <input
@@ -88,11 +105,31 @@ const ProductList = () => {
       </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                product name
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                product description
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                quantity in stock
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                quanity
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                piece per price
+              </TableCell>
+            </TableRow>
+          </TableHead>
           <TableBody>
             {products.map((product) => (
-              <ProductRow {...product} />
+              <ProductRow {...product}  />
             ))}
           </TableBody>
+
           <TableFooter>
             <TableRow>
               <TablePagination
@@ -115,6 +152,9 @@ const ProductList = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <button>create purchase</button>
+      </Box>
     </div>
   );
 };
