@@ -9,14 +9,24 @@ import {
   TableRow,
 } from "@mui/material";
 import TablePaginationActions from "@mui/material/TablePagination/TablePaginationActions";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ProductRow from "../components/product_row";
 import { searchProduct } from "../store/product/actions";
+import { ISearchProduct } from "../store/product/type";
 import { RootState, useAppDispatch } from "../store/store";
 
 const ProductList = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dateOne, setDateOne] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
+
+  const [dateTwo, setDateTwo] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const handleChangePage = (
@@ -42,29 +52,45 @@ const ProductList = () => {
     model: products,
   } = useSelector((state: RootState) => state.products);
   useEffect(() => {
-    console.log("here");
-    console.log();
-    dispatch(searchProduct({ maxResult: rowsPerPage, startPosition: page }));
-  }, [products, page, rowsPerPage]);
+    let payload: ISearchProduct = {
+      maxResult: rowsPerPage,
+      startPosition: page,
+    };
+    if (dateOne) {
+      payload.date1 = new Date(dateOne).toISOString();
+    }
+
+    if (dateTwo) {
+      payload.date2 = new Date(dateTwo).toISOString();
+    }
+
+    dispatch(searchProduct(payload));
+  }, [page, rowsPerPage, dateOne, dateTwo]);
 
   return (
     <div>
-      <button>create product</button>
+      <button> + create product</button>
+      <div>
+        <label>frame date</label>
+        <input
+          type="date"
+          value={dateOne}
+          onChange={(e) => setDateOne(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>to date</label>
+        <input
+          type="date"
+          value={dateTwo}
+          onChange={(e) => setDateTwo(e.target.value)}
+        />
+      </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell component="th" scope="row">
-                  {product.name}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
-                  {product.description}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
-                  {product.quantityOnStock}
-                </TableCell>
-              </TableRow>
+              <ProductRow {...product} />
             ))}
           </TableBody>
           <TableFooter>

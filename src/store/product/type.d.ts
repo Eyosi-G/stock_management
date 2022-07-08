@@ -1,12 +1,4 @@
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  quantityOnStock: number;
-  registeredOn: string;
-  lastUpdatedOn: string;
-}
-
+import { Product } from "../common/type";
 export interface ProductResponseDto {
   model: Product[];
   totalCount: number;

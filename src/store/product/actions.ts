@@ -1,10 +1,5 @@
 import { axiosInstance } from "../../utils/axios";
-import {
-  IProductSearchAction,
-  ISearchProduct,
-  Product,
-  ProductResponseDto,
-} from "./type";
+import { IProductSearchAction, ISearchProduct } from "./type";
 
 export const searchProduct =
   (data: ISearchProduct) => async (dispatch: any) => {
